@@ -1,0 +1,22 @@
+#container {
+  width: 1020px;
+  margin:5px;
+}
+#simulation {
+  float: left;
+  width: 600px;
+  height: 400px;
+  background-color: #eef;
+  border: 2px solid black;
+}
+#info {
+  float: right;
+  width: 400px;
+  height: 400px;
+  background-color: #eef;
+  border: 2px solid black;
+}
+
+.bar {
+  fill: steelblue;
+}
