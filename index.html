@@ -24,23 +24,24 @@
 
       <div id="sidebar">
         <div id="control">
+          <p><button id="muteB">Toggle sound</button></p>
           <p><button id="pauseB">Pause</button></p>
-          <p>Rate<br>
+          <p>Simulation rate<br>
             <input type="range" min="100" max="800" step="100" value="300" id="rateValue">
             <label for="rateValue" id="rateLabel">300ms</label>
           </p>
+          <p><button id="restartB">Restart</button></p>
         </div>
       </div>
 
       <div id="info">
-        <svg width="800" height="400"></svg>
+        <svg width="770" height="380"></svg>
       </div>
 
       <div id="footer">VDP Servedio@CSH Vienna</div>
 
     </div>
     <script src="main.js"></script>
-    <script> main(); </script>
   </body>
 
 </html>
