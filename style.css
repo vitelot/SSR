@@ -1,5 +1,5 @@
 #container {
-  width: 1020px;
+  width: 824px;
   margin:5px;
 }
 #simulation {
@@ -8,11 +8,38 @@
   height: 400px;
   background-color: #eef;
   border: 2px solid black;
+  margin: 4px;
 }
-#info {
+#sidebar {
   float: right;
-  width: 400px;
+  width: 200px;
   height: 400px;
   background-color: #eef;
   border: 2px solid black;
+  margin: 4px;
+}
+#control {
+  margin: 1px;
+  text-align: center;
+  /*border-style: solid;
+  border-width: thin;*/
+}
+#control button {
+  width: 50%;
+  font-size: 14px;
+  border-radius: 5px;
+  outline: none;
+}
+#info {
+  clear: both;
+  width: 812px;
+  height: 400px;
+  background-color: #eef;
+  border: 2px solid black;
+  margin: 4px;
+}
+#footer {
+  text-align: right;
+  padding-right: 1em;
+  font-size: 12px;
 }

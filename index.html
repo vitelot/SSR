@@ -11,13 +11,32 @@
   <body>
     <div id="container">
 
+      <div id="header">
+        <h1>Sample Space Reducing model</h1>
+        <div id="description">
+          <p>Add a description here</p>
+        </div>
+      </div>
+
       <div id="simulation">
         <svg width="600" height="400"></svg>
       </div>
 
-      <div id="info">
-        <svg width="400" height="400"></svg>
+      <div id="sidebar">
+        <div id="control">
+          <p><button id="pauseB">Pause</button></p>
+          <p>Rate<br>
+            <input type="range" min="100" max="800" step="100" value="300" id="rateValue">
+            <label for="rateValue" id="rateLabel">300ms</label>
+          </p>
+        </div>
       </div>
+
+      <div id="info">
+        <svg width="800" height="400"></svg>
+      </div>
+
+      <div id="footer">VDP Servedio@CSH Vienna</div>
 
     </div>
     <script src="main.js"></script>

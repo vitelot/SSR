@@ -1,5 +1,17 @@
+function main() {
 
-main = function() {
+  ///////////////////////////
+  ///// Buttons //////
+    d3.select("#pauseB")
+      .on("click", pauseSym);
+
+    // d3.select("#restartB")
+    //   .on("click", restartSym);
+  ////////////////////
+
+  var runningFlag = true;
+  var timer;
+
   var svgs = d3.select("#simulation svg"),
       margin = {top: 20, right: 20, bottom: 20, left: 20},
       width = +svgs.attr("width") - margin.left - margin.right,
@@ -24,6 +36,16 @@ main = function() {
 
   var i;
 
+  ////////////////////
+  // inputs //
+    d3.select("#rateValue").on("input", function() {
+      rate = +this.value;
+      clearInterval(timer);
+      if(runningFlag) timer = setInterval(run, rate);
+      d3.select("#rateLabel").text(rate+"ms");
+    });
+  ////////////
+
   for(i=0; i<N; i++) {
     bars[i] = 1-i/N;
     histo[i] = 0;
@@ -43,44 +65,53 @@ main = function() {
       .attr("width", x.bandwidth())
       .attr("height", function(d) { return height - y(d); });
 
-  start = function() {
+  var pos;
+  start();
 
-    let timer;
-    let pos=0;
+  function start() {
+
+    pos=0;
 
     d3.selectAll(".bar")
       .style("opacity", "1");
 
-    timer = setInterval( function() {
-
-      let r = pos + 1 + Math.random()*(N-pos-1) | 0; // integer from pos+1 to N-1
-      pos = r;
-      histo[pos]++;
-      
-      let sound = notes[(N-pos)%7];
-      let octave = 2+Math.floor((N-pos)/14);
-      piano.play(sound, octave, .5*rate/1000); // plays C4 for 2s using the 'piano' sound profile
-
-      for( i=0; i<r; i++) {
-        d3.select("#bar-"+i)
-          .style("opacity", "0.5");
-      }
-
-      d3.select("#bar-"+r)
-        .style("fill", barcol1)
-        .transition()
-        .duration(0.7*rate)
-        .style("fill", barcol0);
-
-      if(pos === N-1) {
-        clearInterval(timer);
-        start();
-      }
-    }, rate);
+    timer = setInterval(run, rate);
   }
 
-  start();
+  function run() {
+    let r = pos + 1 + Math.random()*(N-pos-1) | 0; // integer from pos+1 to N-1
+    pos = r;
+    histo[pos]++;
 
+    let sound = notes[(N-pos)%7];
+    let octave = 2+Math.floor((N-pos)/14);
+    piano.play(sound, octave, .5*rate/1000); // plays C4 for 2s using the 'piano' sound profile
 
+    for( i=0; i<r; i++) {
+      d3.select("#bar-"+i)
+        .style("opacity", "0.5");
+    }
+
+    d3.select("#bar-"+r)
+      .style("fill", barcol1)
+      .transition()
+      .duration(0.7*rate)
+      .style("fill", barcol0);
+
+    if(pos === N-1) {
+      clearInterval(timer);
+      start();
+    }
+  }
+
+  function pauseSym() {
+    if (runningFlag) {
+      clearInterval(timer);
+      runningFlag = false;
+    } else {
+      timer = setInterval(run, rate);
+      runningFlag = true;
+    }
+  }
 
 }
