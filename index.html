@@ -2,19 +2,42 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="audiosynth.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <title>Sample Space reducing model</title>
+    <title>Sample Space reducing process</title>
   </head>
 
   <body>
     <div id="container">
 
       <div id="header">
-        <h1>Sample Space Reducing model</h1>
+        <h1>Sample Space Reducing Processes</h1>
         <div id="description">
-          <p>Add a description here</p>
+          <p>
+
+              A Sample Space Reducing (SSR) process is a stochastic process
+              whose sample space reduces as it evolves in time.
+              In its simplest version, imagine a set of N states in a system,
+              labelled by i = 1, 2, · · · , N.
+              The states are ordered by the label.
+              The only rule that defines the SSR process is that transitions
+              between states may only occur from higher to lower labels.
+              This means that transition from state j to i is possible only
+              if label j > i. When the lowest state i = 1 is reached,
+              the process is restarted.
+              This simple dynamics leads to a Zipf’s law in the frequency
+              of state visits, i.e. the probability to visit state i is given
+              by p(i) = 1/i (corresponding to a streigth line in the plot
+              below with circles).
+              This scaling law is extremely robust and occurs for a wide class
+              of prior probabilities.<br>
+              [<a href="http://www.pnas.org/content/112/17/5348" target="_blank">
+                  PNAS 112, 5348–5353, (2015)
+              </a>]
+
+          </p>
         </div>
       </div>
 
