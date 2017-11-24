@@ -23,9 +23,6 @@ function main() {
       width = +svgs.attr("width") - margin.left - margin.right,
       height = +svgs.attr("height") - margin.top - margin.bottom;
 
-  var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
-      y = d3.scaleLinear().rangeRound([height, 0]);
-
   var g = svgs.append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 ////////////////////////////////////////
@@ -35,9 +32,6 @@ function main() {
       margini = {top: 20, right: 20, bottom: 20, left: 50},
       widthi = +svgi.attr("width") - margini.left - margini.right,
       heighti = +svgi.attr("height") - margini.top - margini.bottom;
-
-  var xi = d3.scaleLog().base(10).range([widthi, 0]),
-      yi = d3.scaleLog().base(10).range([heighti, 0]);
 
   var gi = svgi.append("g")
       .attr("transform", "translate(" + margini.left + "," + margini.top + ")");
@@ -71,6 +65,9 @@ function main() {
     histo[i] = 1e-6;
   }
 
+  var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+      y = d3.scaleLinear().rangeRound([height, 0]);
+
   x.domain(bars.map(function(d,i) { return i; }));
   y.domain([0, d3.max(bars)]);
 
@@ -78,15 +75,19 @@ function main() {
     .data(bars)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("id", function(d,i) { return "bar-"+i;})
+      .attr("id", function(d,i) { return "bar-"+(N-i-1);}) ////
       .attr("x", function(d,i) { return x(i); })
       .style("fill", barcol0)
       .attr("y", function(d) { return y(d); })
       .attr("width", x.bandwidth())
       .attr("height", function(d) { return height - y(d); });
 
-  xi.domain([1, N]);
-  yi.domain([1, 1000]);
+  var xi = d3.scaleLog().base(10)
+                .range([0, widthi])
+                .domain([1, N]),
+      yi = d3.scaleLog().base(10)
+                .range([heighti, 0])
+                .domain([1, 1000]);
 
   gi.selectAll(".point")
     .data(histo)
@@ -108,13 +109,13 @@ function main() {
 
   gi.append("text")
   .attr("id", "label--x")
-  .attr("transform", "translate(" + (widthi-100) + "," + (heighti+margini.bottom) + ")")
+  .attr("transform", "translate(" + (470) + "," + (heighti+margini.bottom) + ")")
   .text("Index");
 
 
   gi.append("g")
   .attr("class", "axis axis--y")
-  .attr("transform", "translate("+ xi(N) +","+ yi(1000) + ")")
+  .attr("transform", "translate("+ xi(1) +","+ yi(1000) + ")") ////
   .call(d3.axisLeft(yi).ticks(10,",.0f"));
 
   gi.append("text")
@@ -122,6 +123,15 @@ function main() {
   .attr("transform", "translate(" + (-25) + "," + (heighti/2+15) + ")rotate(-90)")
   // .attr("transform", "rotate(-90)")
   .text("Count");
+
+  gi.append("line")
+    .attr("x1", xi(1))
+    .attr("y1", yi(100))
+    .attr("x2", xi(N-1))
+    .attr("y2", yi(100/(N-1)))
+    .attr("stroke-width", 3)
+    .attr("stroke", "red")
+    .style("opacity", "0.3");
 
   var pos;
   start();
@@ -133,7 +143,7 @@ function main() {
   function start() {
 
     runningFlag = true;
-    pos=0;
+    pos=N-1; ////
 
     d3.selectAll(".bar")
       .style("opacity", "1");
@@ -142,15 +152,16 @@ function main() {
   }
 
   function run() {
-    let r = pos + 1 + Math.random()*(N-pos-1) | 0; // integer from pos+1 to N-1
+    // let r = pos + 1 + Math.random()*(N-pos-1) | 0; // integer from pos+1 to N-1
+    let r = Math.random()*(pos) | 0; // integer from pos-1 to 0 ////
     pos = r;
     histo[pos] += 1;
 
-    let sound = notes[(N-pos)%7];
-    let octave = 2+Math.floor((N-pos)/13);
+    let sound = notes[(pos)%7]; ////
+    let octave = 2+Math.floor((pos)/13); ////
     piano.play(sound, octave, .7*rate/1000); // plays C4 for 2s using the 'piano' sound profile
 
-    for( i=0; i<r; i++) {
+    for( i=N-1; i>r; i--) { ////
       d3.select("#bar-"+i)
         .style("opacity", "0.3");
     }
@@ -166,7 +177,7 @@ function main() {
       .duration(0.7*rate)
       .attr("cy", yi(histo[r]))
 
-    if(pos === N-1) {
+    if(pos === 0) { ////
       clearInterval(timer);
       start();
     }
