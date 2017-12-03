@@ -130,6 +130,14 @@ function main() {
     .attr("stroke", "red")
     .style("opacity", "0.3");
 
+  gi.append('clipPath')
+    .attr('id', 'clip')
+    .append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', widthi)
+        .attr('height', heighti);
+
   var pos, step_count=0;
   start();
 
@@ -179,6 +187,7 @@ function main() {
 
     d3.selectAll(".point")
       .data(histo_normalized)
+      .attr("clip-path", "url(#clip)")
       .transition()
       .duration(0.7*rate)
       .attr("cy", function(d){ return yi(d);})
