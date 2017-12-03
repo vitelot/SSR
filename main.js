@@ -2,8 +2,8 @@ main();
 
 function main() {
 
-  ///////////////////////////
-  ///// Buttons //////
+  ///
+  / Buttons //
     d3.select("#pauseB")
       .on("click", pauseSym);
 
@@ -12,12 +12,12 @@ function main() {
 
     d3.select("#restartB")
       .on("click", restartSym);
-  ////////////////////
+
 
   var runningFlag = true;
   var timer;
 
-///////// for the simulation ///////////
+/ for the simulation ///
   var svgs = d3.select("#simulation svg"),
       margin = {top: 20, right: 20, bottom: 20, left: 20},
       width = +svgs.attr("width") - margin.left - margin.right,
@@ -25,9 +25,9 @@ function main() {
 
   var g = svgs.append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-////////////////////////////////////////
 
-///////// for the histogramm ///////////
+
+/ for the histogramm ///
   var svgi = d3.select("#info svg"),
       margini = {top: 20, right: 20, bottom: 20, left: 50},
       widthi = +svgi.attr("width") - margini.left - margini.right,
@@ -35,7 +35,7 @@ function main() {
 
   var gi = svgi.append("g")
       .attr("transform", "translate(" + margini.left + "," + margini.top + ")");
-////////////////////////////////////////
+
 
   var N = 50;
   var rate = 300;
@@ -50,7 +50,7 @@ function main() {
 
   var i;
 
-  ////////////////////
+
   // inputs //
     d3.select("#rateValue").on("input", function() {
       rate = +this.value;
@@ -58,7 +58,7 @@ function main() {
       if(runningFlag) timer = setInterval(run, rate);
       d3.select("#rateLabel").text(rate+"ms");
     });
-  ////////////
+
 
   for(i=0; i<N; i++) {
     bars[i] = 1-i/N;
@@ -75,7 +75,7 @@ function main() {
     .data(bars)
     .enter().append("rect")
       .attr("class", "bar")
-      .attr("id", function(d,i) { return "bar-"+(N-i-1);}) ////
+      .attr("id", function(d,i) { return "bar-"+(N-i-1);})
       .attr("x", function(d,i) { return x(i); })
       .style("fill", barcol0)
       .attr("y", function(d) { return y(d); })
@@ -87,7 +87,7 @@ function main() {
                 .domain([1, N]),
       yi = d3.scaleLog().base(10)
                 .range([heighti, 0])
-                .domain([1, 1000]);
+                .domain([1/N/Math.log(N), 1]);
 
   gi.selectAll(".point")
     .data(histo)
@@ -98,13 +98,11 @@ function main() {
       .attr("cy", function(d) { return yi(d); })
       .attr("r", "8")
       .attr("fill", "white")
-      .attr("stroke", "black")
-      // .attr("width", x.bandwidth())
-      // .attr("height", function(d) { return height - y(d); });
+      .attr("stroke", "black");
 
   gi.append("g")
   .attr("class", "axis axis--x")
-  .attr("transform", "translate(0," + yi(1) + ")")
+  .attr("transform", "translate(0," + yi(1/N/Math.log(N)) + ")")
   .call(d3.axisBottom(xi).ticks(10,",.0f"));
 
   gi.append("text")
@@ -115,35 +113,34 @@ function main() {
 
   gi.append("g")
   .attr("class", "axis axis--y")
-  .attr("transform", "translate("+ xi(1) +","+ yi(1000) + ")") ////
-  .call(d3.axisLeft(yi).ticks(10,",.0f"));
+  .attr("transform", "translate("+ xi(1) +","+ yi(1) + ")")
+  .call(d3.axisLeft(yi).ticks(10,",.2f"));
 
   gi.append("text")
   .attr("id", "label--y")
-  .attr("transform", "translate(" + (-25) + "," + (heighti/2+15) + ")rotate(-90)")
-  // .attr("transform", "rotate(-90)")
-  .text("Count");
+  .attr("transform", "translate(" + (-25) + "," + (heighti/2+20) + ")rotate(-90)")
+  .text("Freq");
 
   gi.append("line")
     .attr("x1", xi(1))
-    .attr("y1", yi(100))
+    .attr("y1", yi(1.0/Math.log(N)))
     .attr("x2", xi(N-1))
-    .attr("y2", yi(100/(N-1)))
+    .attr("y2", yi(1/(N-1)/Math.log(N)))
     .attr("stroke-width", 3)
     .attr("stroke", "red")
     .style("opacity", "0.3");
 
-  var pos;
+  var pos, step_count=0;
   start();
 
-///////////////////////////////////////////
-///////////////////////////////////////////
-///////////////////////////////////////////
+///
+///
+///
 
   function start() {
 
     runningFlag = true;
-    pos=N-1; ////
+    pos=N-1;
 
     d3.selectAll(".bar")
       .style("opacity", "1");
@@ -153,15 +150,18 @@ function main() {
 
   function run() {
     // let r = pos + 1 + Math.random()*(N-pos-1) | 0; // integer from pos+1 to N-1
-    let r = Math.random()*(pos) | 0; // integer from pos-1 to 0 ////
+    let r = Math.random()*(pos) | 0; // integer from pos-1 to 0
     pos = r;
     histo[pos] += 1;
+    step_count++;
 
-    let sound = notes[(pos)%7]; ////
-    let octave = 2+Math.floor((pos)/13); ////
+    var histo_normalized = histo.map(x=>x/step_count);
+
+    let sound = notes[(pos)%7];
+    let octave = 2+Math.floor((pos)/13);
     piano.play(sound, octave, .7*rate/1000); // plays C4 for 2s using the 'piano' sound profile
 
-    for( i=N-1; i>r; i--) { ////
+    for( i=N-1; i>r; i--) {
       d3.select("#bar-"+i)
         .style("opacity", "0.3");
     }
@@ -172,12 +172,18 @@ function main() {
       .duration(0.7*rate)
       .style("fill", barcol0);
 
-    d3.select("#point-"+r)
+    // d3.select("#point-"+r)
+    //   .transition()
+    //   .duration(0.7*rate)
+    //   .attr("cy", yi(histo[r]))
+
+    d3.selectAll(".point")
+      .data(histo_normalized)
       .transition()
       .duration(0.7*rate)
-      .attr("cy", yi(histo[r]))
+      .attr("cy", function(d){ return yi(d);})
 
-    if(pos === 0) { ////
+    if(pos === 0) {
       clearInterval(timer);
       start();
     }
@@ -201,6 +207,8 @@ function main() {
 
   function restartSym() {
       clearInterval(timer);
+      step_count = 0;
+
       for(i=0; i<N; i++) histo[i] = 1e-6;
 
       d3.selectAll(".bar")
